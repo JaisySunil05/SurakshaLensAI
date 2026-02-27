@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SurakshaLens AI | Agentic Safety Shield</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body class="bg-slate-50 min-h-screen font-sans">
+
+<div class="max-w-4xl mx-auto py-12 px-4">
+
+    <!-- HEADER -->
+    <div class="text-center mb-10">
+        <h1 class="text-4xl font-bold text-slate-800">🛡 SurakshaLens AI</h1>
+        <p class="text-blue-600 mt-2 italic">Your Agentic Digital Safety Shield</p>
+    </div>
+
+    <!-- INPUT -->
+    <div class="bg-white p-8 rounded-3xl shadow-xl mb-8">
+        <textarea id="messageInput"
+                  class="w-full p-4 border-2 rounded-xl"
+                  rows="5"
+                  placeholder="Paste suspicious WhatsApp / SMS message..."></textarea>
+
+        <button onclick="runAgenticAnalysis()"
+                id="analyzeBtn"
+                class="mt-6 w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-bold">
+            <span id="btnText">ACTIVATE AI AGENT</span>
+        </button>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div id="dashboard" class="hidden space-y-6">
+
+        <div class="bg-white p-6 rounded-2xl shadow-lg">
+            <h3 class="text-xs uppercase font-bold text-gray-400 mb-2">AI Risk Assessment</h3>
+
+            <div class="flex items-center space-x-4">
+                <div id="riskScore" class="text-5xl font-black">0%</div>
+                <div id="riskBadge" class="px-4 py-1 rounded-full text-sm font-bold"></div>
+            </div>
+
+            <ul id="reasoningList" class="mt-6 space-y-2 text-sm text-gray-600"></ul>
+        </div>
+
+        <!-- ACTIONS -->
+        <div class="bg-white p-6 rounded-2xl shadow-lg space-y-3">
+            <button onclick="copySafeReply()" class="w-full bg-blue-100 p-3 rounded-xl">
+                Draft Safe Reply
+            </button>
+
+            <button onclick="downloadComplaintPDF()" class="w-full bg-red-100 p-3 rounded-xl">
+                Download Legal Draft (PDF)
+            </button>
+
+            <button onclick="warnOnWhatsApp()" class="w-full bg-green-100 p-3 rounded-xl">
+                Protect Community (WhatsApp)
+            </button>
+        </div>
+
+        <!-- ENTITY INFO -->
+        <div class="bg-black text-white p-6 rounded-2xl">
+            <p><b>Detected Phone:</b> <span id="extPhone"></span></p>
+            <p><b>Detected UPI/Link:</b> <span id="extUpi"></span></p>
+        </div>
+
+    </div>
+</div>
+
+<script>
+
+let currentReport = null;
+
+async function runAgenticAnalysis() {
+
+    const text = document.getElementById("messageInput").value;
+    if (!text) return alert("Please enter text.");
+
+    document.getElementById("btnText").innerText = "AGENT IS REASONING...";
+
+    try {
+        const response = await fetch("http://127.0.0.1:8000/analyze", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message: text })
+        });
+
+        const result = await response.json();
+
+        currentReport = {
+            score: result.risk_score,
+            label: result.decision,
+            reasons: result.reasons,
+            phone: extractPhone(text),
+            upi: extractUPI(text),
+            reply: `This message was analyzed by SurakshaLens AI. Risk Level: ${result.decision} (${result.risk_score}%). Stop contacting me.`
+        };
+
+        updateUI();
+        document.getElementById("btnText").innerText = "ANALYSIS COMPLETE";
+
+    } catch (error) {
+        alert("Backend not running. Start FastAPI server.");
+        console.error(error);
+    }
+}
+
+function extractPhone(text) {
+    const regex = /(\+91[\-\s]?)?[6789]\d{9}/g;
+    const match = text.match(regex);
+    return match ? match[0] : "None Detected";
+}
+
+function extractUPI(text) {
+    const upiRegex = /[a-zA-Z0-9.\-_]{2,256}@[a-zA-Z]{2,64}/g;
+    const linkRegex = /https?:\/\/[^\s]+/g;
+
+    const upi = text.match(upiRegex);
+    const link = text.match(linkRegex);
+
+    return upi ? upi[0] : (link ? link[0] : "None Detected");
+}
+
+function updateUI() {
+
+    document.getElementById("dashboard").classList.remove("hidden");
+
+    document.getElementById("riskScore").innerText =
+        currentReport.score + "%";
+
+    document.getElementById("riskBadge").innerText =
+        currentReport.label;
+
+    document.getElementById("extPhone").innerText =
+        currentReport.phone;
+
+    document.getElementById("extUpi").innerText =
+        currentReport.upi;
+
+    const badge = document.getElementById("riskBadge");
+
+    if (currentReport.score > 70) {
+        badge.className = "px-4 py-1 rounded-full text-sm font-bold bg-red-100 text-red-700";
+    } else if (currentReport.score > 40) {
+        badge.className = "px-4 py-1 rounded-full text-sm font-bold bg-yellow-100 text-yellow-700";
+    } else {
+        badge.className = "px-4 py-1 rounded-full text-sm font-bold bg-green-100 text-green-700";
+    }
+
+    const list = document.getElementById("reasoningList");
+    list.innerHTML = "";
+
+    currentReport.reasons.forEach(r => {
+        list.innerHTML += `<li>• ${r}</li>`;
+    });
+}
+
+function copySafeReply() {
+    navigator.clipboard.writeText(currentReport.reply);
+    alert("Safe reply copied.");
+}
+
+function downloadComplaintPDF() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    doc.text("Cybercrime Incident Report", 20, 20);
+    doc.text(`Risk: ${currentReport.label} (${currentReport.score}%)`, 20, 40);
+    doc.text(`Phone: ${currentReport.phone}`, 20, 50);
+    doc.text(`UPI/Link: ${currentReport.upi}`, 20, 60);
+
+    doc.save("SurakshaLens_Report.pdf");
+}
+
+function warnOnWhatsApp() {
+    const text = encodeURIComponent(
+        `🚨 Digital Safety Alert 🚨\nRisk: ${currentReport.score}%\nVerdict: ${currentReport.label}`
+    );
+    window.open(`https://wa.me/?text=${text}`, "_blank");
+}
+
+</script>
+</body>
+</html>
