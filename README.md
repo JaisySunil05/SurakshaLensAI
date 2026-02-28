@@ -158,8 +158,11 @@ SurakshaLens AI demonstrates how explainable AI + practical UI design can create
 ## Team
 
 **Jaisy Sunil**  
+
 **Aardra SV**
+
 **Hrisheekesh Narayan P E**
+
 **Mohammed Ameen**
 
 B.Tech Electronics & Communication Engineering  
