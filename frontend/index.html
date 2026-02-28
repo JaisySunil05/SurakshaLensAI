@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>SurakshaLens AI | Agentic Safety Shield</title>
@@ -9,179 +10,289 @@
 </head>
 
 <body class="bg-slate-50 min-h-screen font-sans">
+    <div class="max-w-4xl mx-auto py-12 px-4">
 
-<div class="max-w-4xl mx-auto py-12 px-4">
+        <!-- HEADER -->
+        <div class="text-center mb-10">
+            <h1 class="text-4xl font-bold text-slate-800 tracking-tight">🛡 SurakshaLens AI</h1>
+            <p class="text-blue-600 mt-2 italic font-medium">Your Agentic Digital Safety Shield</p>
+        </div>
 
-    <!-- HEADER -->
-    <div class="text-center mb-10">
-        <h1 class="text-4xl font-bold text-slate-800">🛡 SurakshaLens AI</h1>
-        <p class="text-blue-600 mt-2 italic">Your Agentic Digital Safety Shield</p>
-    </div>
+        <!-- INPUT -->
+        <div class="bg-white p-8 rounded-3xl shadow-xl mb-8 border border-slate-100">
+            <textarea id="messageInput"
+                class="w-full p-4 border-2 border-slate-200 rounded-xl focus:border-blue-500 outline-none" rows="5"
+                placeholder="Paste suspicious WhatsApp / SMS message..."></textarea>
 
-    <!-- INPUT -->
-    <div class="bg-white p-8 rounded-3xl shadow-xl mb-8">
-        <textarea id="messageInput"
-                  class="w-full p-4 border-2 rounded-xl"
-                  rows="5"
-                  placeholder="Paste suspicious WhatsApp / SMS message..."></textarea>
+            <button onclick="runAgenticAnalysis()" id="analyzeBtn"
+                class="mt-6 w-full bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-xl font-bold shadow-lg shadow-blue-100">
+                <span id="btnText">ACTIVATE AI AGENT</span>
+            </button>
+        </div>
 
-        <button onclick="runAgenticAnalysis()"
-                id="analyzeBtn"
-                class="mt-6 w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-bold">
-            <span id="btnText">ACTIVATE AI AGENT</span>
-        </button>
-    </div>
+        <!-- AGENT MONOLOGUE -->
+        <div id="monologueBox" class="hidden mb-6 p-4 bg-slate-900 rounded-2xl border border-slate-700 shadow-inner">
+            <p class="text-xs font-mono text-blue-400 mb-2 uppercase tracking-widest">Agent Internal Monologue</p>
+            <div id="monologueText" class="text-sm font-mono text-slate-300 leading-relaxed"></div>
+        </div>
 
-    <!-- DASHBOARD -->
-    <div id="dashboard" class="hidden space-y-6">
+        <!-- DASHBOARD -->
+        <div id="dashboard" class="hidden space-y-6">
 
-        <div class="bg-white p-6 rounded-2xl shadow-lg">
-            <h3 class="text-xs uppercase font-bold text-gray-400 mb-2">AI Risk Assessment</h3>
-
-            <div class="flex items-center space-x-4">
-                <div id="riskScore" class="text-5xl font-black">0%</div>
-                <div id="riskBadge" class="px-4 py-1 rounded-full text-sm font-bold"></div>
+            <!-- RISK CARD -->
+            <div class="bg-white p-6 rounded-2xl shadow-lg border border-slate-100">
+                <h3 class="text-xs uppercase font-bold text-gray-400 mb-2 tracking-widest">AI Risk Assessment</h3>
+                <div class="flex items-center space-x-4">
+                    <div id="riskScore" class="text-6xl font-black text-slate-900">0%</div>
+                    <div id="riskBadge" class="px-4 py-1 rounded-full text-sm font-bold uppercase"></div>
+                </div>
+                <ul id="reasoningList" class="mt-6 space-y-2 text-sm text-gray-600 italic"></ul>
             </div>
 
-            <ul id="reasoningList" class="mt-6 space-y-2 text-sm text-gray-600"></ul>
+            <!-- SCAM PROMPT -->
+            <div id="scamPrompt" class="hidden bg-red-50 border-2 border-red-200 p-8 rounded-2xl text-center shadow-xl">
+                <i class="fa-solid fa-circle-exclamation text-red-500 text-5xl mb-4"></i>
+                <p class="text-red-800 font-extrabold text-xl mb-4">
+                    ⚠ THIS IS A SCAM MESSAGE.<br>
+                    <span class="text-sm font-medium text-red-700">
+                        Do you want me to draft a cybercrime complaint?
+                    </span>
+                </p>
+                <div class="flex flex-wrap justify-center gap-4">
+                    <button onclick="ignoreScam()" class="px-6 py-2 bg-gray-200 rounded-xl font-bold">Ignore</button>
+                    <button onclick="downloadComplaintPDF()"
+                        class="px-6 py-2 bg-red-600 text-white rounded-xl font-bold">Draft PDF</button>
+                    <button onclick="draftComplaintEmail()"
+                        class="px-6 py-2 bg-blue-600 text-white rounded-xl font-bold">Email Complaint</button>
+                </div>
+            </div>
+
+            <!-- ACTION TOOLS -->
+            <div id="actionSection" class="hidden space-y-3">
+
+                <button onclick="verifyNews()"
+                    class="w-full bg-blue-50 text-blue-700 p-5 rounded-2xl font-bold hover:bg-blue-100 text-left flex items-center border border-blue-100">
+                    <i class="fa-solid fa-magnifying-glass text-2xl mr-4"></i>
+                    <div>
+                        <p class="text-lg">Search for Truth (Fact Check)</p>
+                        <p class="text-xs italic opacity-70">Cross-verify this claim on official sources</p>
+                    </div>
+                </button>
+
+                <button onclick="warnOnWhatsApp()"
+                    class="w-full bg-green-50 text-green-700 p-5 rounded-2xl font-bold hover:bg-green-100 text-left flex items-center border border-green-100">
+                    <i class="fa-brands fa-whatsapp text-3xl mr-4"></i>
+                    <div>
+                        <p class="text-lg">Protect Community (WhatsApp)</p>
+                        <p class="text-xs italic opacity-70">Forward AI safety alert to warn others</p>
+                    </div>
+                </button>
+
+            </div>
+
+            <!-- ENTITY INFO -->
+            <div
+                class="bg-slate-900 text-white p-6 rounded-2xl shadow-xl flex flex-col md:flex-row justify-between gap-4 font-mono">
+                <div>
+                    <p class="text-xs text-slate-400 uppercase mb-1">Detected Phone</p>
+                    <p id="extPhone" class="text-blue-400 text-lg">None</p>
+                </div>
+
+                <div class="hidden md:block w-px bg-slate-700"></div>
+
+                <div>
+                    <p class="text-xs text-slate-400 uppercase mb-1">Detected UPI</p>
+                    <p id="extUpi" class="text-amber-400 text-lg">None</p>
+                </div>
+
+                <div class="hidden md:block w-px bg-slate-700"></div>
+
+                <div>
+                    <p class="text-xs text-slate-400 uppercase mb-1">Detected Link</p>
+                    <p id="extLink" class="text-green-400 text-lg">None</p>
+                </div>
+            </div>
+
         </div>
-
-        <!-- ACTIONS -->
-        <div class="bg-white p-6 rounded-2xl shadow-lg space-y-3">
-            <button onclick="copySafeReply()" class="w-full bg-blue-100 p-3 rounded-xl">
-                Draft Safe Reply
-            </button>
-
-            <button onclick="downloadComplaintPDF()" class="w-full bg-red-100 p-3 rounded-xl">
-                Download Legal Draft (PDF)
-            </button>
-
-            <button onclick="warnOnWhatsApp()" class="w-full bg-green-100 p-3 rounded-xl">
-                Protect Community (WhatsApp)
-            </button>
-        </div>
-
-        <!-- ENTITY INFO -->
-        <div class="bg-black text-white p-6 rounded-2xl">
-            <p><b>Detected Phone:</b> <span id="extPhone"></span></p>
-            <p><b>Detected UPI/Link:</b> <span id="extUpi"></span></p>
-        </div>
-
     </div>
-</div>
 
-<script>
+    <script>
+        let currentReport = null;
+        const sleep = ms => new Promise(r => setTimeout(r, ms));
 
-let currentReport = null;
+        async function runAgenticAnalysis() {
 
-async function runAgenticAnalysis() {
+            const text = document.getElementById("messageInput").value;
+            if (!text) return alert("Please enter text.");
 
-    const text = document.getElementById("messageInput").value;
-    if (!text) return alert("Please enter text.");
+            document.getElementById("dashboard").classList.add("hidden");
+            document.getElementById("monologueBox").classList.remove("hidden");
+            document.getElementById("btnText").innerText = "AGENT IS REASONING...";
 
-    document.getElementById("btnText").innerText = "AGENT IS REASONING...";
+            const mText = document.getElementById("monologueText");
+            mText.innerHTML = "";
 
-    try {
-        const response = await fetch("http://127.0.0.1:8000/analyze", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ message: text })
-        });
+            const steps = [
+                "🔍 [OBSERVE] Scanning linguistic patterns...",
+                "🧠 [THINK] Running ML classifier...",
+                "📜 [REASON] Applying rule-based scoring...",
+                "🌐 [ACT] Extracting hidden entities..."
+            ];
 
-        const result = await response.json();
+            for (let step of steps) {
+                mText.innerHTML += `> ${step}<br>`;
+                await sleep(600);
+            }
 
-        currentReport = {
-            score: result.risk_score,
-            label: result.decision,
-            reasons: result.reasons,
-            phone: extractPhone(text),
-            upi: extractUPI(text),
-            reply: `This message was analyzed by SurakshaLens AI. Risk Level: ${result.decision} (${result.risk_score}%). Stop contacting me.`
-        };
+            try {
+                const response = await fetch("http://127.0.0.1:8000/analyze", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ message: text })
+                });
+                const result = await response.json();
 
-        updateUI();
-        document.getElementById("btnText").innerText = "ANALYSIS COMPLETE";
+                currentReport = {
+                    score: result.risk_score,
+                    label: result.decision,
+                    reasons: result.reasons,
+                    phone: extractPhone(text),
+                    upi: extractUPI(text),
+                    link: extractLink(text),
+                    fullText: text
+                };
 
-    } catch (error) {
-        alert("Backend not running. Start FastAPI server.");
-        console.error(error);
-    }
-}
+                mText.innerHTML += `<span class="text-green-400">> ✅ Analysis Complete (${result.risk_score}%)</span>`;
+                await sleep(500);
 
-function extractPhone(text) {
-    const regex = /(\+91[\-\s]?)?[6789]\d{9}/g;
-    const match = text.match(regex);
-    return match ? match[0] : "None Detected";
-}
+                updateUI();
+                document.getElementById("btnText").innerText = "ANALYSIS COMPLETE";
 
-function extractUPI(text) {
-    const upiRegex = /[a-zA-Z0-9.\-_]{2,256}@[a-zA-Z]{2,64}/g;
-    const linkRegex = /https?:\/\/[^\s]+/g;
+            } catch (error) {
+                alert("Backend not running.");
+                document.getElementById("btnText").innerText = "ACTIVATE AI AGENT";
+            }
+        }
 
-    const upi = text.match(upiRegex);
-    const link = text.match(linkRegex);
+        function extractPhone(text) {
+            return text.match(/(\+91[\-\s]?)?[6789]\d{9}/g)?.[0] || "None Detected";
+        }
 
-    return upi ? upi[0] : (link ? link[0] : "None Detected");
-}
+        function extractUPI(text) {
+            return text.match(/[a-zA-Z0-9.\-_]{2,256}@[a-zA-Z]{2,64}/g)?.[0] || "None Detected";
+        }
 
-function updateUI() {
+        function extractLink(text) {
+            return text.match(/https?:\/\/[^\s]+/g)?.[0] || "None Detected";
+        }
 
-    document.getElementById("dashboard").classList.remove("hidden");
+        function updateUI() {
 
-    document.getElementById("riskScore").innerText =
-        currentReport.score + "%";
+            document.getElementById("dashboard").classList.remove("hidden");
 
-    document.getElementById("riskBadge").innerText =
-        currentReport.label;
+            document.getElementById("riskScore").innerText = currentReport.score + "%";
+            document.getElementById("riskBadge").innerText = currentReport.label;
 
-    document.getElementById("extPhone").innerText =
-        currentReport.phone;
+            document.getElementById("extPhone").innerText = currentReport.phone;
+            document.getElementById("extUpi").innerText = currentReport.upi;
+            document.getElementById("extLink").innerText = currentReport.link;
 
-    document.getElementById("extUpi").innerText =
-        currentReport.upi;
+            document.getElementById("reasoningList").innerHTML =
+                currentReport.reasons.map(r => `<li>• ${r}</li>`).join("");
 
-    const badge = document.getElementById("riskBadge");
+            const badge = document.getElementById("riskBadge");
+            const scamPrompt = document.getElementById("scamPrompt");
+            const actionSection = document.getElementById("actionSection");
 
-    if (currentReport.score > 70) {
-        badge.className = "px-4 py-1 rounded-full text-sm font-bold bg-red-100 text-red-700";
-    } else if (currentReport.score > 40) {
-        badge.className = "px-4 py-1 rounded-full text-sm font-bold bg-yellow-100 text-yellow-700";
-    } else {
-        badge.className = "px-4 py-1 rounded-full text-sm font-bold bg-green-100 text-green-700";
-    }
+            if (currentReport.label === "SCAM") {
+                badge.className = "px-4 py-1 rounded-full bg-red-100 text-red-700 border border-red-200";
+                scamPrompt.classList.remove("hidden");
+                actionSection.classList.remove("hidden");
+            }
+            else if (currentReport.label === "SUSPICIOUS") {
+                badge.className = "px-4 py-1 rounded-full bg-yellow-100 text-yellow-700 border border-yellow-200";
+                scamPrompt.classList.add("hidden");
+                actionSection.classList.remove("hidden");
+            }
+            else {
+                badge.className = "px-4 py-1 rounded-full bg-green-100 text-green-700 border border-green-200";
+                scamPrompt.classList.add("hidden");
+                actionSection.classList.add("hidden");
+            }
+        }
 
-    const list = document.getElementById("reasoningList");
-    list.innerHTML = "";
+        function verifyNews() {
+            const query = encodeURIComponent(currentReport.fullText.substring(0, 150));
+            window.open(`https://www.google.com/search?q=${query}+fact+check`, "_blank");
+        }
 
-    currentReport.reasons.forEach(r => {
-        list.innerHTML += `<li>• ${r}</li>`;
-    });
-}
+        function ignoreScam() {
+            document.getElementById("scamPrompt").innerHTML =
+                "<p class='text-gray-500 font-bold italic py-4'>Crisis noted. Warning minimized.</p>";
+        }
 
-function copySafeReply() {
-    navigator.clipboard.writeText(currentReport.reply);
-    alert("Safe reply copied.");
-}
+        function downloadComplaintPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
 
-function downloadComplaintPDF() {
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
+            doc.setFontSize(18);
+            doc.setTextColor(255, 0, 0);
+            doc.text("SURAKSHALENS AI: CYBERCRIME REPORT", 20, 20);
 
-    doc.text("Cybercrime Incident Report", 20, 20);
-    doc.text(`Risk: ${currentReport.label} (${currentReport.score}%)`, 20, 40);
-    doc.text(`Phone: ${currentReport.phone}`, 20, 50);
-    doc.text(`UPI/Link: ${currentReport.upi}`, 20, 60);
+            doc.setFontSize(12);
+            doc.setTextColor(0, 0, 0);
+            doc.text(`Verdict: ${currentReport.label} (${currentReport.score}%)`, 20, 40);
+            doc.text(`Phone: ${currentReport.phone}`, 20, 50);
+            doc.text(`UPI: ${currentReport.upi}`, 20, 60);
+            doc.text(`Link: ${currentReport.link}`, 20, 70);
 
-    doc.save("SurakshaLens_Report.pdf");
-}
+            doc.text("Evidence Text:", 20, 85);
+            const splitText = doc.splitTextToSize(currentReport.fullText, 160);
+            doc.text(splitText, 20, 95);
 
-function warnOnWhatsApp() {
-    const text = encodeURIComponent(
-        `🚨 Digital Safety Alert 🚨\nRisk: ${currentReport.score}%\nVerdict: ${currentReport.label}`
-    );
-    window.open(`https://wa.me/?text=${text}`, "_blank");
-}
+            doc.save("SurakshaLens_Complaint.pdf");
+        }
 
-</script>
+        function draftComplaintEmail() {
+            const subject = encodeURIComponent(`Cybercrime Complaint - ${currentReport.label}`);
+            const body = encodeURIComponent(
+                `Dear Cybercrime Team,
+
+This message was flagged by SurakshaLens AI.
+
+Verdict: ${currentReport.label}
+Risk Score: ${currentReport.score}%
+
+Detected Phone: ${currentReport.phone}
+Detected UPI: ${currentReport.upi}
+Detected Link: ${currentReport.link}
+
+Original Message:
+${currentReport.fullText}
+
+Kindly investigate this issue.
+
+Regards`
+            );
+            window.open(`https://mail.google.com/mail/?view=cm&fs=1&to=complaint@cybercrime.gov.in&su=${subject}&body=${body}`, '_blank');
+        }
+
+        function warnOnWhatsApp() {
+            const msg =
+                `🛡 SURAKSHALENS AI ALERT
+
+Verdict: ${currentReport.label}
+Risk Score: ${currentReport.score}%
+
+Phone: ${currentReport.phone}
+UPI: ${currentReport.upi}
+Link: ${currentReport.link}
+
+Do NOT share OTP or click unknown links.`;
+
+            window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
+        }
+    </script>
 </body>
+
 </html>

@@ -5,7 +5,7 @@ from agent import analyze_message
 
 app = FastAPI()
 
-# ✅ ADD THIS CORS BLOCK
+# Enable CORS for frontend
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -14,13 +14,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-class InputText(BaseModel):
-    message: str
-
 @app.get("/")
 def home():
-    return {"message": "SurakshaLens API Running"}
+    return {"message": "SurakshaLens API is running 🚀"}
+
+class Message(BaseModel):
+    message: str
 
 @app.post("/analyze")
-def analyze(data: InputText):
-    return analyze_message(data.message)
+def analyze(msg: Message):
+    return analyze_message(msg.message)

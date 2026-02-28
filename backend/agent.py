@@ -1,40 +1,44 @@
 import joblib
 from rules import rule_score
 
+# Load ML assets
 model = joblib.load("model.pkl")
 vectorizer = joblib.load("vectorizer.pkl")
 
+
 def analyze_message(text):
+
+    # ML Layer
     vec = vectorizer.transform([text])
-    prediction = model.predict(vec)[0]
-    prob = max(model.predict_proba(vec)[0])
+    prediction = model.predict(vec)[0]  # "scam" or "ham"
+    prob = max(model.predict_proba(vec)[0])  # 0–1
 
-    rule_points, reasons = rule_score(text)
+    # Rule Layer
+    rule_points, rule_reasons = rule_score(text)
 
+    # Combine Scores
     risk_score = rule_points
-    if prediction == "scam":
+
+    if prediction.lower() == "scam":
         risk_score += int(prob * 50)
 
-    if risk_score > 80:
-        decision = "HIGH RISK"
-    elif risk_score > 40:
+    risk_score = min(risk_score, 100)
+
+    # Decision (IMPORTANT for frontend)
+    if risk_score >= 70:
+        decision = "SCAM"
+    elif risk_score >= 40:
         decision = "SUSPICIOUS"
     else:
         decision = "SAFE"
 
+    reasons = list(set(rule_reasons))
+
+    if prediction.lower() == "scam":
+        reasons.append("ML model detected scam pattern")
+
     return {
-        "prediction": prediction,
-        "confidence": round(prob, 2),
         "risk_score": risk_score,
         "decision": decision,
-        "reasons": reasons,
-        "actions": generate_actions(decision)
+        "reasons": reasons
     }
-
-def generate_actions(decision):
-    if decision == "HIGH RISK":
-        return ["Do NOT click links", "Do NOT share OTP"]
-    elif decision == "SUSPICIOUS":
-        return ["Verify before acting"]
-    else:
-        return ["Message appears safe"]
