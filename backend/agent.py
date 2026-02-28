@@ -2,8 +2,12 @@ import joblib
 from rules import rule_score
 
 # Load ML assets
-model = joblib.load("model.pkl")
-vectorizer = joblib.load("vectorizer.pkl")
+import os
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+model = joblib.load(os.path.join(BASE_DIR, "model.pkl"))
+vectorizer = joblib.load(os.path.join(BASE_DIR, "vectorizer.pkl"))
 
 
 def analyze_message(text):
