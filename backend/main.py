@@ -24,3 +24,7 @@ class Message(BaseModel):
 @app.post("/analyze")
 def analyze(msg: Message):
     return analyze_message(msg.message)
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=10000)
